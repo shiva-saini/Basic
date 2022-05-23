@@ -152,3 +152,63 @@ router.post('/product', (req,res,next) =>{
     res.redirect('/');
 })
  -->
+
+ 
+ <!-- 
+here first argument can be any name that depends on the name of your directory in which your html files do exist
+end the second argument is deefault argument in the documnet of express js
+app.set('views','views');
+
+now we will not use  following for pug template
+ console.log(adminData.products)
+    res.sendFile(path.join(__dirname,'../','views','shop.html'));
+express provides a spacial render method for this for rendring the pug templates 
+so we will use that is shop.js
+ res.render('shop'); note we dont need to write the full path here 
+ like res.render('shop.pug') express handles it auto amtecally because 
+ we are writting app.set('view engine','pug');
+ and app.set('views','views')
+
+ This is one way to export data
+ exports.routes = router;
+exports.products = products; -->
+
+
+
+
+<!-- doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title #{docTitle}
+        link(rel="stylesheet", href="/css/main.css")
+        link(rel="stylesheet", href="/css/shop.css")
+    body 
+        header.main_header
+            nav.main_header_nav
+                ul.main_header_item_list
+                    li.main_header_list_item
+                        a(href="/") Shop
+                    li.main_header_list_item
+                        a(href="/admin/add-product") Add Product
+        main 
+            if prods.length > 0
+                .grid 
+                    each product in prods 
+                        article.card_product_item 
+                            header.card_header 
+                                h1.product_title Greate Book 
+                            .card_image 
+                                img(src="", alt="", srcset="")
+                            .card_content 
+                                h2.product_price $27.834
+                                p.product_description Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                            .card_action 
+                                button.btn AddTo Cart 
+            else 
+                h1 No product Yet
+ -->
+
+

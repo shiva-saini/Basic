@@ -34,3 +34,64 @@
     color: white;
 }
 
+.grid{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    /* align-items: center;
+    justify-content: center; */
+    width: 90%;
+    height: 600px;
+    border: 2px solid black;
+    padding: 10px;
+    margin: 10px;
+    background-color: grey;
+
+}
+
+.card_product_item {
+    width: 200px;
+    height: 270px;
+    background-color: white;
+    text-align: center;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    border-radius: 20px;
+    
+   
+}
+
+.card_header{
+    height: 30px;
+    /* background-color: red; */
+}
+
+.card_image{
+    height: 100px;
+    background: lightblue url("https://jooinn.com/images/pile-of-books-7.jpg") no-repeat  center;
+   
+}
+
+.card_content{
+    height: 80px;
+    /* background-color: green; */
+    /* color: yellow; */
+}
+
+.main_header_list_item a{
+    padding:5px;
+    margin-left: 5px;
+    text-decoration: none;
+    color: white;
+}
+
+.active{
+    background-color: red;
+}
+.btn{
+    border: black 2px solid;
+    background-color: grey;
+    color: white;
+    border-radius: 10px;
+    
+}
