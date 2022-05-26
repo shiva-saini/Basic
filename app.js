@@ -5,14 +5,8 @@ const path = require('path');
 const bodyParser = require('body-parser'); 
 
 const app = express(); 
-const db = require('./util/database');
-db.execute('SELECT * FROM oroducts')
-.then((result)=>{
-console.log(result[0])
-})
-.catch((err)=>{
- console.log(err)
-})
+
+
 
 const adminRouter = require('./routes/admin.js'); 
 
