@@ -212,3 +212,8 @@ html(lang="en")
  -->
 
 
+<!-- exports.getAddProduct = (req,res,next)=>{
+    // res.sendFile(path.join(__dirname,'../','views','add-product.html'))
+    //note path:admin/add-product can be any name path:'/dadf/afjadj
+    res.render('admin/edit-product',{pageTitle:'Add Product',path:'/admin/add-product'}); // to render html file this is the name of html file
+} -->

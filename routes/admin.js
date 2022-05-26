@@ -1,13 +1,22 @@
+const path = require('path');
 
-const router = require('express').Router(); //to get router for routing
-const path = require('path'); // path module for using path.join to join whole dir
+const express = require('express');
 
-const adminController = require('../controllers/admin.js')
-router.get('/products',adminController.getAdminProducts)
-router.get('/edit-product',adminController.getAdminEditProduct)
+const adminController = require('../controllers/admin');
 
-router.get('/add-product',adminController.getAddProduct)
+const router = express.Router();
 
-router.post('/add-product', adminController.postAddProduct)
+// /admin/add-product => GET
+router.get('/add-product', adminController.getAddProduct);
 
-module.exports = router; // exporting routes for fouting this file in othe file
+// /admin/products => GET
+router.get('/products', adminController.getProducts);
+
+// /admin/add-product => POST
+router.post('/add-product', adminController.postAddProduct);
+
+router.get('/edit-product/:productId', adminController.getEditProduct);
+router.post('/edit-product',adminController.postEditProduct);
+router.post('/delete-product',adminController.postDeleteProduct);
+
+module.exports = router;
