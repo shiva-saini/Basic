@@ -6,23 +6,26 @@ exports.getProducts = (req, res, next) => {
   //it will render the shop html file to client side
   //path can be any name
   // let products = adminData.products;
-  Product.fetchAll()
-    .then(([rows, fieldData]) => {
-      res.render("shop/product-list", {
-        prods: rows,
-        pageTitle: "ALL Products",
-        path: "/products",
-      });
-    })
-    .catch((err) => console.log(err));
+  Product.findAll()
+  .then(products =>{
+    res.render("shop/product-list", {
+      prods: products,
+      pageTitle: "ALL Products",
+      path: "/products",
+    });
+
+  })
+  .catch(err => console.log(err))
+
+   
 };
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findById(prodId)
-    .then(([product]) => {
+  Product.findByPk(prodId)
+    .then((product) => {
       res.render("shop/product-detail", {
-        product: product[0],
+        product: product,
         pageTitle: product.title,
         path: "/products",
       });
@@ -31,15 +34,18 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll()
-    .then(([rows, fieldData]) => {
-      res.render("shop/index", {
-        prods: rows,
-        pageTitle: "ALL Products",
-        path: "/",
-      });
-    })
-    .catch((err) => console.log(err));
+  Product.findAll()
+  .then(products =>{
+    console.log(products)
+    res.render("shop/index", {
+      prods: products,
+      pageTitle: "ALL Products",
+      path: "/",
+    });
+
+  })
+  .catch(err => console.log(err))
+   
 };
 
 exports.getProductCart = (req, res, next) => {

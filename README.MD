@@ -218,7 +218,17 @@ html(lang="en")
     res.render('admin/edit-product',{pageTitle:'Add Product',path:'/admin/add-product'}); // to render html file this is the name of html file
 } -->
 
+<!-- sequelize 
 
+Product.findAll({where:{
+    id:prodId
+  }}).then(products =>{
+    res.render("shop/product-detail", {
+      product: products[0],
+      pageTitle: products[0].title,
+      path: "/products",
+    });
+  }).catch(err => console.log(err)); -->
 
 
 
@@ -281,3 +291,8 @@ static findById(id, cb) {
 
 
 }; -->
+
+
+<!-- 
+command for comparing two files simultanuously
+code --diff file1.js file2.js -->
