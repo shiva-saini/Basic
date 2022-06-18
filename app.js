@@ -4,8 +4,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const errorController = require('./controllers/error');
-const mongoConnect = require('./util/database').mongoConnect;
+
 const User = require('./models/user');
+const mongoose = require('mongoose');
 
 const app = express();
 
@@ -19,9 +20,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-  User.findById('62a42d2dbe25ecb2e0420a82')
+  User.findById('62a4828598bc674207948b4c')
     .then(user => {
-      req.user = new User(user.name, user.email, user.cart, user._id);
+      req.user = user;
       next();
     })
     .catch(err => console.log(err));
@@ -32,6 +33,22 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(() => {
+mongoose.connect('mongodb+srv://shivasaini:adiAXQ073WWOwV7Z@shiva-oauth-test.gdqyj.mongodb.net/shop?retryWrites=true&w=majority')
+.then(()=>{
+  User.findOne()
+  .then(user=>{
+    if(!user){
+      const user = new User({
+        name:'shiva',
+        email:'test@gamil.com',
+        cart: {
+          items: []
+        }
+      })
+      user.save();
+    }
+  })
   app.listen(3000);
-});
+}).catch(err=>{
+  console.log(err);
+})
