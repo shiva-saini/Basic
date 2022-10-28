@@ -1,5 +1,9 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
+const fs = require('fs');
+const path = require('path');
+const PDFDocument = require('pdfkit');
+const stripe = require('stripe')('sk_test_51Lk4SASGPs8wF7xqhedLEHKCAJZs39Grp7oHOxEkjG1WRulxhtSHxAv4OHCTlPOXpWcG5Z5POvvkTlmIVEjFV6iE00TwyH0GGT');
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -12,9 +16,7 @@ exports.getProducts = (req, res, next) => {
       });
     })
     .catch(err => {
-      const error = new Error(err);
-        error.httpStatusCode = 500;
-       return next(error);
+      console.log(err);
     });
 };
 
@@ -28,11 +30,7 @@ exports.getProduct = (req, res, next) => {
         path: '/products'
       });
     })
-    .catch(err => {
-      const error = new Error(err);
-        error.httpStatusCode = 500;
-       return next(error);
-    });
+    .catch(err => console.log(err));
 };
 
 exports.getIndex = (req, res, next) => {
@@ -45,9 +43,7 @@ exports.getIndex = (req, res, next) => {
       });
     })
     .catch(err => {
-      const error = new Error(err);
-        error.httpStatusCode = 500;
-       return next(error);
+      console.log(err);
     });
 };
 
@@ -63,11 +59,7 @@ exports.getCart = (req, res, next) => {
         
       });
     })
-    .catch(err => {
-      const error = new Error(err);
-        error.httpStatusCode = 500;
-       return next(error);
-    });
+    .catch(err => console.log(err));
 };
 
 exports.postCart = (req, res, next) => {
@@ -89,13 +81,93 @@ exports.postCartDeleteProduct = (req, res, next) => {
     .then(result => {
       res.redirect('/cart');
     })
+    .catch(err => console.log(err));
+};
+
+
+exports.getCheckout = (req, res, next) => {
+  let products;
+  let total = 0;
+  req.user
+    .populate('cart.items.productId')
+    // .execPopulate()
+    .then(user => {
+      products = user.cart.items;
+      total = 0;
+      products.forEach(p => {
+        total += p.quantity * p.productId.price;
+      });
+
+      return stripe.checkout.sessions.create({
+        mode: 'payment',
+        line_items: products.map(p => {
+          return {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: p.productId.title,
+              },
+              unit_amount: p.productId.price * 100,
+            },
+            // name: p.productId.title,
+            // description: p.productId.description,
+            // amount: p.productId.price * 100,
+            // currency: 'usd',
+            quantity: p.quantity,
+            
+          };
+          
+        }),
+        success_url: req.protocol + '://' + req.get('host') + '/checkout/success', // => http://localhost:3000
+        cancel_url: req.protocol + '://' + req.get('host') + '/checkout/cancel'
+      });
+    })
+    .then(session => {
+      res.render('shop/checkout', {
+        path: '/checkout',
+        pageTitle: 'Checkout',
+        products: products,
+        totalSum: total,
+        sessionId: session.id
+      });
+    })
     .catch(err => {
       const error = new Error(err);
-        error.httpStatusCode = 500;
-       return next(error);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
+
+exports.getCheckoutSuccess = (req, res, next) => {
+  req.user
+    .populate('cart.items.productId')
+    .execPopulate()
+    .then(user => {
+      const products = user.cart.items.map(i => {
+        return { quantity: i.quantity, product: { ...i.productId._doc } };
+      });
+      const order = new Order({
+        user: {
+          email: req.user.email,
+          userId: req.user
+        },
+        products: products
+      });
+      return order.save();
+    })
+    .then(result => {
+      return req.user.clearCart();
+    })
+    .then(() => {
+      res.redirect('/orders');
+    })
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
+};
 exports.postOrder = (req, res, next) => {
   req.user
     .populate('cart.items.productId')
@@ -118,11 +190,7 @@ exports.postOrder = (req, res, next) => {
     .then(() => {
       res.redirect('/orders');
     })
-    .catch(err => {
-      const error = new Error(err);
-        error.httpStatusCode = 500;
-       return next(error);
-    });
+    .catch(err => console.log(err));
 };
 
 exports.getOrders = (req, res, next) => {
@@ -134,9 +202,74 @@ exports.getOrders = (req, res, next) => {
         orders: orders
       });
     })
-    .catch(err => {
-      const error = new Error(err);
-        error.httpStatusCode = 500;
-       return next(error);
-    });
+    .catch(err => console.log(err));
 };
+
+exports.getInvoice = (req,res,next) => {
+  const orderId = req.params.orderId;
+  // console.log(orderId);
+
+  Order.findById(orderId)
+  .then(order =>{
+    if(!order){
+      return  next(new Error('no order found!'));
+    }
+
+    if(order.user.userId.toString() !== req.user._id.toString()){
+       return next(new Error('Unothrize User!'));
+    }
+
+  
+  const invoiceName = 'invoice-' + orderId + '.pdf'; // u can change .
+   //extinsion here like pdf or jpg or jpeg
+  const invoicePath = path.join('data','invoices',invoiceName);
+  const pdfDoc = new PDFDocument();
+  res.setHeader('Content-Type','application/pdf');
+  pdfDoc.pipe(fs.createWriteStream(invoicePath));
+  pdfDoc.pipe(res);
+
+  pdfDoc.fontSize(26).text('Invoice', {
+    underline: true
+  });
+  pdfDoc.text('-----------------------');
+  let totalPrice = 0;
+  order.products.forEach(prod => {
+    totalPrice += prod.quantity * prod.product.price;
+    pdfDoc
+      .fontSize(14)
+      .text(
+        prod.product.title +
+          ' - ' +
+          prod.quantity +
+          ' x ' +
+          '$' +
+          prod.product.price
+      );
+  });
+  pdfDoc.text('---');
+  pdfDoc.fontSize(20).text('Total Price: $' + totalPrice);
+  pdfDoc.end();
+  // fs.readFile(invoicePath,(err,data) =>{
+  //   if(err){
+  //     return next(err);
+  //   }
+  //   res.setHeader('Content-Type','application/jpg');
+  //   //if it is pdf then application/pdf
+  //   res.setHeader('Content-Disposition','inline');
+  //   res.send(data);
+    
+  // })
+ 
+  // const file = fs.createReadStream(invoicePath);
+  // res.setHeader('Content-Type','application/jpg');
+  // // res.setHeader('Content-Disposition','inline');
+  //   // res.send(data);
+  //   file.pipe(res)
+  
+  }) .catch(err =>{
+    next(err);
+  })
+
+  
+
+}

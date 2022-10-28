@@ -296,3 +296,549 @@ static findById(id, cb) {
 <!-- 
 command for comparing two files simultanuously
 code --diff file1.js file2.js -->
+
+// const path = require("path");
+
+// const express = require("express");
+// const bodyParser = require("body-parser");
+// const mongoose = require("mongoose");
+// const session = require("express-session");
+// const MongoDBStore = require("connect-mongodb-session")(session);
+// const errorController = require("./controllers/error");
+
+// const User = require("./models/user");
+// const csrf = require('csurf');
+// const MONGODB_URI =
+//   "mongodb+srv://shivasaini:adiAXQ073WWOwV7Z@shiva-oauth-test.gdqyj.mongodb.net/shop?retryWrites=true&w=majority";
+
+
+// const app = express();
+
+// const store = new MongoDBStore({
+//   uri: MONGODB_URI,
+//   collection: "session",
+// }); //this is a constructor
+
+// const csrfProtection = csrf();
+// app.set("view engine", "ejs");
+// app.set("views", "views");
+
+// const adminRoutes = require("./routes/admin");
+// const shopRoutes = require("./routes/shop");
+// const authRoutes = require("./routes/auth");
+
+
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(express.static(path.join(__dirname, "public")));
+
+// //note session route should come before all other routes
+// app.use(
+//   session({ secret: "my secret", resave: false, saveUninitialized: false,store:store })
+// );
+
+// app.use(csrfProtection);
+
+
+
+// app.use((req,res,next)=>{
+//   if(!req.session.user){
+//     return next();
+//   }
+//   User.findById(req.session.user._id)
+//        .then(user => {
+//         req.user = user;
+//         next();
+//        })
+//        .catch(err=>{console.log(err)});
+// });
+
+// app.use((req,res,next) =>{
+//   req.locals.isAuthenticated = req.session.isLoggedIn;
+//   req.locals.csrfToken = req.csrfToken();
+//   next();
+// })
+// app.use("/admin", adminRoutes);
+// app.use(shopRoutes);
+// app.use(authRoutes);
+// app.use(errorController.get404);
+// mongoose
+//   .connect(MONGODB_URI)
+//   .then(() => {
+//     app.listen(3000);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
+
+
+
+
+
+
+
+// const path = require('path');
+
+// const express = require('express');
+// const bodyParser = require('body-parser');
+// const mongoose = require('mongoose');
+// const session = require('express-session');
+// const MongoDBStore = require('connect-mongodb-session')(session);
+// const csrf = require('csurf');
+// const flash = require('connect-flash');
+// const multer = require('multer');
+
+// const errorController = require('./controllers/error');
+// const User = require('./models/user');
+
+// const MONGODB_URI =
+//   'mongodb+srv://shivasaini:adiAXQ073WWOwV7Z@shiva-oauth-test.gdqyj.mongodb.net/shop?retryWrites=true&w=majority';
+// const app = express();
+// const store = new MongoDBStore({
+//   uri: MONGODB_URI,
+//   collection: 'sessions'
+// });
+// const csrfProtection = csrf();
+
+// const fileStorage = multer.diskStorage({
+//   destination: (req,file,cb) =>{
+//            cb(null,'images')
+//   },
+//   filename: (req,file,cb) =>{
+//     cb(null, new Date().toISOString() + '-' + file.originalname);
+//   }
+// })
+
+// const fileFilter = (req,file,cb) =>{
+//  if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg'){
+//   cb(null,true);
+//  }else{
+//   cb(null,false);
+//  }
+// }
+// app.set('view engine', 'ejs');
+// app.set('views', 'views');
+
+// const adminRoutes = require('./routes/admin');
+// const shopRoutes = require('./routes/shop');
+// const authRoutes = require('./routes/auth');
+
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(multer({ storage : fileStorage,fileFilter:fileFilter }).single('image'));
+
+// app.use(express.static(path.join(__dirname, 'public')));
+// app.use(
+//   session({
+//     secret: 'my secret',
+//     resave: false,
+//     saveUninitialized: false,
+//     store: store
+//   })
+// );
+// app.use(csrfProtection);
+// app.use(flash());
+
+// app.use((req, res, next) => {
+//   res.locals.isAuthenticated = req.session.isLoggedIn;
+//   res.locals.csrfToken = req.csrfToken();
+//   next();
+// });
+// app.use((req, res, next) => {
+  
+//   if (!req.session.user) {
+//     return next();
+//   }
+//   User.findById(req.session.user._id)
+//     .then(user => {
+//       // throw new Error('dummy');
+//       if(!user) {
+//         return next();
+//       }
+//       req.user = user;
+//       next();
+//     })
+//     .catch(err => {
+//     next(new Error(err))
+//     });
+// });
+
+
+
+// app.use('/admin', adminRoutes);
+// app.use(shopRoutes);
+// app.use(authRoutes);
+// app.get('/500',errorController.get500);
+// app.use(errorController.get404);
+
+
+// app.use((error,req,res,next) =>{
+//   //res.status(error.httpStatusCode).render(...)
+//   res.status(500).render('500', {
+//     pageTitle: 'Error!',
+//     path: '/500',
+//     isAuthenticated: req.session.isLoggedIn
+//   });
+// });
+
+
+// mongoose
+//   .connect(MONGODB_URI)
+//   .then(result => {
+//     app.listen(3000);
+//   })
+//   .catch(err => {
+//     console.log(err);
+//   });
+
+
+
+
+<!-- <%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+
+<body>
+   <%- include('../includes/navigation.ejs') %>
+
+    <main>
+        <% if (errorMessage.length > 0) { %>
+            <div class="user-message user-message--error"><%= errorMessage %></div>
+        <% } %>
+        <form class="login-form" action="/signup" method="POST" novalidate>
+            <div class="form-control">
+                <label for="email">E-Mail</label>
+                <input 
+                class="<%= validationErrors.find(e => e.param === 'email') ? 'invalid' : '' %>"
+                type="email" 
+                name="email" 
+                id="email" 
+                value="<%= oldInput.email %>">
+            </div>
+            <div class="form-control">
+                <label for="password">Password</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'password') ? 'invalid' : '' %>"
+                    type="password" 
+                    name="password" 
+                    id="password" 
+                    value="<%= oldInput.password %>">
+            </div>
+            <div class="form-control">
+                <label for="confirmPassword">Confirm Password</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'confirmPassword') ? 'invalid' : '' %>"
+                    type="password" 
+                    name="confirmPassword" 
+                    id="confirmPassword" 
+                    value="<%= oldInput.confirmPassword %>">
+            </div>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button class="btn" type="submit">Signup</button>
+        </form>
+    </main>
+<%- include('../includes/end.ejs') %> -->
+
+
+
+<!-- app.js
+
+
+
+// const path = require('path');
+
+// const express = require('express');
+// const bodyParser = require('body-parser');
+// const mongoose = require('mongoose');
+// const session = require('express-session');
+// const MongoDBStore = require('connect-mongodb-session')(session);
+// const csrf = require('csurf');
+// const flash = require('connect-flash');
+// const multer = require('multer');
+
+// const errorController = require('./controllers/error');
+// const User = require('./models/user');
+
+// const MONGODB_URI =
+//   'mongodb+srv://shivasaini:adiAXQ073WWOwV7Z@shiva-oauth-test.gdqyj.mongodb.net/shop';
+
+// const app = express();
+// const store = new MongoDBStore({
+//   uri: MONGODB_URI,
+//   collection: 'sessions'
+// });
+// const csrfProtection = csrf();
+
+// const fileStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'images');
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, new Date().toISOString() + '-' + file.originalname);
+//   }
+// });
+
+// const fileFilter = (req, file, cb) => {
+//   if (
+//     file.mimetype === 'image/png' ||
+//     file.mimetype === 'image/jpg' ||
+//     file.mimetype === 'image/jpeg'
+//   ) {
+//     cb(null, true);
+//   } else {
+//     cb(null, false);
+//   }
+// };
+
+// app.set('view engine', 'ejs');
+// app.set('views', 'views');
+
+// const adminRoutes = require('./routes/admin');
+// const shopRoutes = require('./routes/shop');
+// const authRoutes = require('./routes/auth');
+
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(
+//   multer({ storage: fileStorage, fileFilter: fileFilter }).single('image')
+// );
+// app.use(express.static(path.join(__dirname, 'public')));
+// app.use('/images', express.static(path.join(__dirname, 'images')));
+// app.use(
+//   session({
+//     secret: 'my secret',
+//     resave: false,
+//     saveUninitialized: false,
+//     store: store
+//   })
+// );
+
+// app.use(csrfProtection);
+// app.use(flash());
+
+// app.use((req, res, next) => {
+//   res.locals.isAuthenticated = req.session.isLoggedIn;
+//   res.locals.csrfToken = req.csrfToken();
+//   next();
+// });
+
+// app.use((req, res, next) => {
+//   // throw new Error('Sync Dummy');
+//   if (!req.session.user) {
+//     return next();
+//   }
+//   User.findById(req.session.user._id)
+//     .then(user => {
+//       if (!user) {
+//         return next();
+//       }
+//       req.user = user;
+//       next();
+//     })
+//     .catch(err => {
+//       next(new Error(err));
+//     });
+// });
+
+// app.use('/admin', adminRoutes);
+// app.use(shopRoutes);
+// app.use(authRoutes);
+
+// app.get('/500', errorController.get500);
+
+// app.use(errorController.get404);
+
+// app.use((error, req, res, next) => {
+//   // res.status(error.httpStatusCode).render(...);
+//   // res.redirect('/500');
+//   res.status(500).render('500', {
+//     pageTitle: 'Error!',
+//     path: '/500',
+//     isAuthenticated: req.session.isLoggedIn
+//   });
+// });
+
+// mongoose
+//   .connect(MONGODB_URI)
+//   .then(result => {
+//     app.listen(3000);
+//   })
+//   .catch(err => {
+//     console.log(err);
+//   });
+ -->
+
+
+ <!-- routes auth.js
+ 
+// const express = require('express');
+// const { check, body } = require('express-validator');
+
+// const authController = require('../controllers/auth');
+// const User = require('../models/user');
+
+// const router = express.Router();
+
+// router.get('/login', authController.getLogin);
+
+// router.get('/signup', authController.getSignup);
+
+// router.post(
+//   '/login',
+//   [
+//     body('email')
+//       .isEmail()
+//       .withMessage('Please enter a valid email address.')
+//       .normalizeEmail(),
+//     body('password', 'Password has to be valid.')
+//       .isLength({ min: 5 })
+//       .isAlphanumeric()
+//       .trim()
+//   ],
+//   authController.postLogin
+// );
+
+// router.post(
+//   '/signup',
+//   [
+//     check('email')
+//       .isEmail()
+//       .withMessage('Please enter a valid email.')
+//       .custom((value, { req }) => {
+//         // if (value === 'test@test.com') {
+//         //   throw new Error('This email address if forbidden.');
+//         // }
+//         // return true;
+//         return User.findOne({ email: value }).then(userDoc => {
+//           if (userDoc) {
+//             return Promise.reject(
+//               'E-Mail exists already, please pick a different one.'
+//             );
+//           }
+//         });
+//       })
+//       .normalizeEmail(),
+//     body(
+//       'password',
+//       'Please enter a password with only numbers and text and at least 5 characters.'
+//     )
+//       .isLength({ min: 5 })
+//       .isAlphanumeric()
+//       .trim(),
+//     body('confirmPassword')
+//       .trim()
+//       .custom((value, { req }) => {
+//         if (value !== req.body.password) {
+//           throw new Error('Passwords have to match!');
+//         }
+//         return true;
+//       })
+//   ],
+//   authController.postSignup
+// );
+
+// router.post('/logout', authController.postLogout);
+
+// router.get('/reset', authController.getReset);
+
+// router.post('/reset', authController.postReset);
+
+// router.get('/reset/:token', authController.getNewPassword);
+
+// router.post('/new-password', authController.postNewPassword);
+
+// module.exports = router;
+
+
+<!-- user.js
+// const mongoose = require('mongoose');
+
+// const Schema = mongoose.Schema;
+
+// const userSchema = new Schema({
+//  password:{
+//   type:String,
+//   required:true
+//  },
+//   email: {
+//     type: String,
+//     required: true
+//   },
+//   resetToken:String,
+//   resetTokenExpiration:Date,
+//   cart: {
+//     items: [
+//       {
+//         productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+//         quantity: { type: Number, required: true }
+//       }
+//     ]
+//   }
+// });
+
+// userSchema.methods.addToCart = function(product){
+//   const cartProductIndex = this.cart.items.findIndex(cp => {
+//     return cp.productId.toString() === product._id.toString();
+//   });
+//   let newQuantity = 1;
+//   const updatedCartItems = [...this.cart.items];
+
+//   if (cartProductIndex >= 0) {
+//     newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+//     updatedCartItems[cartProductIndex].quantity = newQuantity;
+//   } else {
+//     updatedCartItems.push({
+//       productId: product._id, //we dont need to write likenew ObjectId(product._id) this
+//       quantity: newQuantity
+//     });
+//   }
+//   const updatedCart = {
+//     items: updatedCartItems
+//   };
+  
+//   this.cart = updatedCart;
+//   return this.save();
+  
+// }
+
+// userSchema.methods.removeFromCart = function(productId){
+//   const updatedCartItems = this.cart.items.filter(item=>{
+//     return item.productId.toString() !== productId.toString();
+//   });
+
+//   this.cart = updatedCartItems;
+//   return this.save();
+// }
+
+// userSchema.methods.clearCart = function(){
+//       this.cart = { items : []};
+//       return  this.save();
+// }
+
+// // addOrder() {
+// //   const db = getDb();
+// //   return this.getCart()
+// //     .then(products => {
+// //       const order = {
+// //         items: products,
+// //         user: {
+// //           _id: new ObjectId(this._id),
+// //           name: this.name
+// //         }
+// //       };
+// //       return db.collection('orders').insertOne(order);
+// //     })
+// //     .then(result => {
+// //       this.cart = { items: [] };
+// //       return db
+// //         .collection('users')
+// //         .updateOne(
+// //           { _id: new ObjectId(this._id) },
+// //           { $set: { cart: { items: [] } } }
+// //         );
+// //     });
+// // }
+
+
+
+ -->
+ 
+  -->
